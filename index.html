@@ -289,22 +289,14 @@
   .map-container {
     position: relative;
     width: min(680px, 95vw);
-  }
-
-  .brazil-map-svg {
-    width: 100%;
-    height: auto;
+    height: 500px;
+    background-image: url('map.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     filter: drop-shadow(0 0 30px rgba(6,214,160,0.2));
+    border-radius: 16px;
   }
-
-  /* Brazil states fill */
-  .brazil-map-svg .land {
-    fill: #2d6a4f;
-    stroke: #1b4332;
-    stroke-width: 0.8;
-    transition: fill 0.2s;
-  }
-  .brazil-map-svg .land:hover { fill: #40916c; }
 
   /* Map pins */
   .map-pin {
@@ -345,12 +337,16 @@
 
   .pin-name {
     text-align: center;
-    font-size: 0.62rem;
-    font-weight: 800;
+    font-size: 0.85rem;
+    font-weight: 900;
     color: white;
-    margin-top: 4px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    margin-top: 6px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.9);
     white-space: nowrap;
+    letter-spacing: 0.5px;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
   }
 
   /* Popup card */
@@ -654,40 +650,6 @@
   <p class="progress-label" id="progress-label">0 de 5 pessoas descobertas</p>
 
   <div class="map-container">
-    <!-- SVG Map of Brazil -->
-    <svg class="brazil-map-svg" viewBox="0 0 600 580" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#2d9e6b"/>
-          <stop offset="100%" style="stop-color:#1b7a4f"/>
-        </linearGradient>
-      </defs>
-      <!-- Simplified Brazil outline as a single polygon (geographic approximation) -->
-      <path class="land" filter="url(#glow)" fill="url(#mapGrad)" d="
-        M 270,18 L 305,16 L 340,22 L 370,30 L 390,26 L 410,30 L 425,38 L 432,50 L 440,65
-        L 448,80 L 450,95 L 445,108 L 452,118 L 460,125 L 468,132 L 475,145 L 478,160
-        L 472,170 L 468,182 L 464,195 L 460,208 L 462,220 L 468,230 L 474,242 L 478,255
-        L 480,268 L 478,280 L 472,290 L 465,298 L 472,308 L 480,318 L 485,330 L 484,342
-        L 478,352 L 470,360 L 462,370 L 455,382 L 450,395 L 448,408 L 445,420 L 440,430
-        L 432,440 L 422,448 L 410,454 L 398,458 L 385,460 L 372,458 L 360,452 L 350,444
-        L 340,436 L 330,428 L 318,422 L 305,418 L 292,415 L 278,412 L 265,408 L 252,402
-        L 240,394 L 230,384 L 222,372 L 215,360 L 210,348 L 205,336 L 198,325 L 190,316
-        L 180,308 L 170,302 L 158,296 L 148,288 L 140,278 L 132,266 L 126,254 L 122,242
-        L 118,230 L 116,218 L 115,206 L 116,194 L 118,182 L 120,170 L 122,158 L 124,145
-        L 128,132 L 134,120 L 142,108 L 150,98 L 158,90 L 165,82 L 172,74 L 178,66
-        L 182,58 L 186,50 L 192,42 L 200,36 L 210,30 L 222,24 L 235,20 L 248,17 Z
-      "/>
-      <!-- Northeast bump -->
-      <path class="land" fill="url(#mapGrad)" stroke="#1b4332" stroke-width="0.8" d="
-        M 370,30 L 395,28 L 418,35 L 435,45 L 448,60 L 455,78 L 456,96 L 448,110
-        L 438,118 L 428,108 L 420,95 L 415,80 L 408,68 L 398,58 L 386,50 L 375,44 Z
-      "/>
-    </svg>
-
     <!-- Pins will be injected by JS -->
   </div>
 </div>
@@ -746,8 +708,7 @@ const people = [
     emoji: '🌻',
     color: '#FF9F43',
     pinColor: '#FF9F43',
-    // Position % on the map container
-    x: 36, y: 53
+    x: 58, y: 62
   },
   {
     id: 'ana-nathiele',
@@ -758,7 +719,7 @@ const people = [
     emoji: '💜',
     color: '#A855F7',
     pinColor: '#A855F7',
-    x: 63, y: 28
+    x: 78, y: 35
   },
   {
     id: 'liza',
@@ -769,7 +730,7 @@ const people = [
     emoji: '💚',
     color: '#06D6A0',
     pinColor: '#06D6A0',
-    x: 58, y: 62
+    x: 67, y: 70
   },
   {
     id: 'luane',
@@ -780,7 +741,7 @@ const people = [
     emoji: '🌸',
     color: '#FF6B9D',
     pinColor: '#FF6B9D',
-    x: 67, y: 70
+    x: 70, y: 76
   },
   {
     id: 'bruno',
@@ -791,7 +752,7 @@ const people = [
     emoji: '💙',
     color: '#4ECDC4',
     pinColor: '#4ECDC4',
-    x: 50, y: 75
+    x: 58, y: 75
   }
 ];
 
@@ -911,7 +872,7 @@ function buildPins() {
         ${p.emoji}
         <style>#pin-${p.id} .pin-icon::after{border-top-color:${p.color};}</style>
       </div>
-      <div class="pin-name" style="color:${p.color}">${p.name.split(' ')[0]}</div>
+      <div class="pin-name" style="color:${p.color}">${p.name}</div>
     `;
 
     if (visited.has(p.id)) pin.classList.add('visited');
