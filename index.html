@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seu Presente Especial 🎁</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF6B9D;
+    --yellow: #FFD93D;
+    --purple: #A855F7;
+    --teal: #06D6A0;
+    --orange: #FF9F43;
+    --blue: #4ECDC4;
+    --dark: #0D1B2A;
+    --card-bg: rgba(255,255,255,0.97);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ───── CONFETTI ───── */
+  #confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ───── SCREENS ───── */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+
+  /* ───── SCREEN 1 – GIFT ───── */
+  #screen-gift {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #1a0533 0%, #0D1B2A 70%);
+    gap: 32px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .gift-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: var(--yellow);
+    text-shadow: 0 0 30px rgba(255,217,61,0.5);
+    line-height: 1.3;
+  }
+  .gift-title span { color: var(--pink); }
+
+  .gift-subtitle {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: rgba(255,255,255,0.75);
+    max-width: 380px;
+  }
+
+  .gift-box-wrapper {
+    cursor: pointer;
+    position: relative;
+    width: 200px; height: 230px;
+    transition: transform 0.2s;
+  }
+  .gift-box-wrapper:hover { transform: scale(1.05); }
+  .gift-box-wrapper:active { transform: scale(0.97); }
+
+  .gift-box-wrapper.opening { animation: giftShake 0.3s ease-in-out; }
+  .gift-box-wrapper.opened .box-lid { animation: lidFly 0.6s forwards; }
+  .gift-box-wrapper.opened .gift-glow { animation: glowPulse 1s forwards; }
+  .gift-box-wrapper.opened .star-burst { opacity: 1; animation: burst 0.6s 0.3s forwards; }
+
+  @keyframes giftShake {
+    0%,100% { transform: rotate(0deg); }
+    20% { transform: rotate(-5deg) scale(1.05); }
+    40% { transform: rotate(5deg) scale(1.08); }
+    60% { transform: rotate(-3deg) scale(1.06); }
+    80% { transform: rotate(3deg) scale(1.04); }
+  }
+  @keyframes lidFly {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-120px) rotate(-20deg); opacity: 0; }
+  }
+  @keyframes glowPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,217,61,0); }
+    100% { box-shadow: 0 0 80px 40px rgba(255,217,61,0.4); }
+  }
+  @keyframes burst {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+
+  .box-body {
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 160px; height: 130px;
+    background: linear-gradient(135deg, #e74c8b, #c2185b);
+    border-radius: 8px 8px 14px 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .box-body::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 100%;
+    background: rgba(255,255,255,0.25);
+    border-radius: 4px;
+  }
+
+  .box-lid {
+    position: absolute;
+    top: 50px; left: 50%; transform: translateX(-50%);
+    width: 176px; height: 48px;
+    background: linear-gradient(135deg, #ff6bae, #e91e7a);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 2;
+    transform-origin: center bottom;
+  }
+  .box-lid::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 100%;
+    background: rgba(255,255,255,0.25);
+    border-radius: 4px;
+  }
+
+  .ribbon-v {
+    position: absolute;
+    top: 50px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 130px;
+    background: rgba(255,255,255,0.3);
+    z-index: 3;
+    bottom: 0;
+  }
+  .ribbon-h {
+    position: absolute;
+    top: 96px; left: 50%; transform: translateX(-50%);
+    width: 176px; height: 20px;
+    background: rgba(255,255,255,0.3);
+    z-index: 3;
+  }
+
+  .bow {
+    position: absolute;
+    top: 26px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 50px;
+    z-index: 4;
+  }
+  .bow-left, .bow-right {
+    position: absolute;
+    width: 36px; height: 28px;
+    background: linear-gradient(135deg, #FFD93D, #FFA500);
+    border-radius: 50% 50% 0 50%;
+    top: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .bow-left { left: 0; transform: rotate(-20deg); border-radius: 50% 0 50% 50%; }
+  .bow-right { right: 0; transform: rotate(20deg); }
+  .bow-center {
+    position: absolute;
+    width: 16px; height: 16px;
+    background: #FFD93D;
+    border-radius: 50%;
+    top: 17px; left: 50%; transform: translateX(-50%);
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  .gift-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star-burst {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 300px; height: 300px;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 5;
+  }
+  .star-burst::before, .star-burst::after {
+    content: '✨🎉💝🌟🎊';
+    font-size: 2rem;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: 20px;
+    white-space: nowrap;
+  }
+
+  .tap-hint {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .reveal-btn {
+    display: none;
+    background: linear-gradient(135deg, var(--yellow), var(--orange));
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255,164,61,0.5);
+    transform: scale(0);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .reveal-btn:hover { box-shadow: 0 12px 32px rgba(255,164,61,0.7); transform: scale(1.05) !important; }
+  .reveal-btn.show { display: block; transform: scale(1); }
+
+  /* ───── SCREEN 2 – MAP ───── */
+  #screen-map {
+    flex-direction: column;
+    align-items: center;
+    background: radial-gradient(ellipse at top, #0a1628 0%, #0D1B2A 60%);
+    padding: 20px 16px 40px;
+    gap: 16px;
+  }
+
+  .map-header {
+    text-align: center;
+    padding-top: 8px;
+  }
+  .map-header h2 {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--yellow);
+    text-shadow: 0 0 20px rgba(255,217,61,0.4);
+  }
+  .map-header p {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+
+  .progress-bar-wrap {
+    width: min(400px, 90vw);
+    background: rgba(255,255,255,0.1);
+    border-radius: 50px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--yellow));
+    border-radius: 50px;
+    transition: width 0.6s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+  }
+
+  .map-container {
+    position: relative;
+    width: min(680px, 95vw);
+  }
+
+  .brazil-map-svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 30px rgba(6,214,160,0.2));
+  }
+
+  /* Brazil states fill */
+  .brazil-map-svg .land {
+    fill: #2d6a4f;
+    stroke: #1b4332;
+    stroke-width: 0.8;
+    transition: fill 0.2s;
+  }
+  .brazil-map-svg .land:hover { fill: #40916c; }
+
+  /* Map pins */
+  .map-pin {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s;
+  }
+  .map-pin:hover { transform: translate(-50%, -110%) scale(1.15); }
+  .map-pin.visited .pin-icon { filter: saturate(0.3) brightness(1.4); }
+  .map-pin.visited .pin-dot { background: #aaa; }
+
+  .pin-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border: 3px solid rgba(255,255,255,0.9);
+    animation: pinPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    position: relative;
+  }
+  .pin-icon::after {
+    content: '';
+    position: absolute;
+    bottom: -14px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 14px solid;
+  }
+
+  @keyframes pinPop {
+    from { transform: scale(0) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .pin-name {
+    text-align: center;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: white;
+    margin-top: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    white-space: nowrap;
+  }
+
+  /* Popup card */
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .popup-overlay.open { display: flex; }
+
+  .popup-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 32px 28px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .popup-card .close-btn {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none; border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #aaa;
+    line-height: 1;
+  }
+
+  .popup-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 16px;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+
+  .popup-name {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+
+  .popup-city {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .popup-city .flag { font-size: 1rem; }
+
+  .popup-msg {
+    background: linear-gradient(135deg, #fff5f8, #fff0f8);
+    border-left: 4px solid var(--pink);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .popup-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--teal), #059669);
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(6,214,160,0.4);
+  }
+
+  /* ───── SCREEN 3 – SCRATCH ───── */
+  #screen-scratch {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #1a0228 0%, #0D1B2A 70%);
+    padding: 24px 16px;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .scratch-header {
+    max-width: 400px;
+  }
+  .scratch-header .crown { font-size: 2.5rem; display: block; }
+  .scratch-header h2 {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.5rem, 5vw, 2.4rem);
+    color: var(--yellow);
+    text-shadow: 0 0 30px rgba(255,217,61,0.5);
+    margin: 8px 0;
+  }
+  .scratch-header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .scratch-card-wrap {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,217,61,0.3);
+    background: linear-gradient(135deg, #c8a55a, #a0763a);
+    padding: 3px;
+  }
+
+  .scratch-card-inner {
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5dfa0, #e8c870);
+    position: relative;
+    width: min(380px, 90vw);
+    height: 220px;
+  }
+
+  .scratch-prize-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    pointer-events: none;
+  }
+  .scratch-prize-text .prize-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #a0763a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .scratch-prize-text .prize-hearts { font-size: 1.4rem; letter-spacing: 4px; }
+  .scratch-prize-text .prize-code-label {
+    font-size: 0.85rem;
+    color: #7a5520;
+    font-weight: 700;
+  }
+  .scratch-prize-text .prize-code {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.2rem, 4vw, 1.7rem);
+    color: #c2185b;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .scratch-prize-text .prize-footer {
+    font-size: 0.8rem;
+    color: #a0763a;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  #scratch-canvas {
+    position: absolute;
+    inset: 0;
+    cursor: crosshair;
+    border-radius: 18px;
+    touch-action: none;
+  }
+
+  .scratch-hint {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    animation: blink 2s infinite;
+  }
+
+  .scratch-participants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 420px;
+  }
+  .participant-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    font-weight: 700;
+  }
+  .participant-chip .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  .love-msg {
+    max-width: 380px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 16px 20px;
+    color: rgba(255,255,255,0.65);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ───── FLOATING HEARTS ───── */
+  .floating-heart {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.2rem;
+    animation: floatUp 3s forwards;
+    z-index: 50;
+  }
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-200px) scale(0.5) rotate(20deg); }
+  }
+
+  /* ───── BACK BUTTON ───── */
+  .back-btn {
+    position: fixed;
+    top: 16px; left: 16px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    z-index: 50;
+    display: none;
+    backdrop-filter: blur(8px);
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.2); }
+  .back-btn.visible { display: block; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<button class="back-btn" id="back-btn" onclick="goBack()">← Voltar</button>
+
+<!-- ══════════ SCREEN 1 – GIFT ══════════ -->
+<div class="screen active" id="screen-gift">
+  <h1 class="gift-title">Você recebeu<br><span>algo especial! 🎁</span></h1>
+  <p class="gift-subtitle">Pessoas incríveis de todo o Brasil se uniram para te surpreender</p>
+
+  <div class="gift-box-wrapper" id="gift-box" onclick="openGift()">
+    <div class="gift-glow"></div>
+    <div class="star-burst"></div>
+    <div class="bow">
+      <div class="bow-left"></div>
+      <div class="bow-right"></div>
+      <div class="bow-center"></div>
+    </div>
+    <div class="box-lid">
+      <div class="ribbon-h" style="top:14px;height:20px;"></div>
+    </div>
+    <div class="box-body">
+      <div class="ribbon-v" style="top:0;height:130px;"></div>
+      <div class="ribbon-h" style="top:50px;"></div>
+    </div>
+  </div>
+
+  <p class="tap-hint" id="tap-hint">👆 Toque na caixa para abrir!</p>
+  <button class="reveal-btn" id="reveal-btn" onclick="goToMap()">🗺️ Ver quem participou do presente</button>
+</div>
+
+<!-- ══════════ SCREEN 2 – MAP ══════════ -->
+<div class="screen" id="screen-map">
+  <div class="map-header">
+    <h2>🗺️ Cada lugar, um pedaço de carinho</h2>
+    <p>Clique nos marcadores para descobrir quem participou!</p>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-bar"></div>
+  </div>
+  <p class="progress-label" id="progress-label">0 de 5 pessoas descobertas</p>
+
+  <div class="map-container">
+    <!-- SVG Map of Brazil -->
+    <svg class="brazil-map-svg" viewBox="0 0 600 580" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#2d9e6b"/>
+          <stop offset="100%" style="stop-color:#1b7a4f"/>
+        </linearGradient>
+      </defs>
+      <!-- Simplified Brazil outline as a single polygon (geographic approximation) -->
+      <path class="land" filter="url(#glow)" fill="url(#mapGrad)" d="
+        M 270,18 L 305,16 L 340,22 L 370,30 L 390,26 L 410,30 L 425,38 L 432,50 L 440,65
+        L 448,80 L 450,95 L 445,108 L 452,118 L 460,125 L 468,132 L 475,145 L 478,160
+        L 472,170 L 468,182 L 464,195 L 460,208 L 462,220 L 468,230 L 474,242 L 478,255
+        L 480,268 L 478,280 L 472,290 L 465,298 L 472,308 L 480,318 L 485,330 L 484,342
+        L 478,352 L 470,360 L 462,370 L 455,382 L 450,395 L 448,408 L 445,420 L 440,430
+        L 432,440 L 422,448 L 410,454 L 398,458 L 385,460 L 372,458 L 360,452 L 350,444
+        L 340,436 L 330,428 L 318,422 L 305,418 L 292,415 L 278,412 L 265,408 L 252,402
+        L 240,394 L 230,384 L 222,372 L 215,360 L 210,348 L 205,336 L 198,325 L 190,316
+        L 180,308 L 170,302 L 158,296 L 148,288 L 140,278 L 132,266 L 126,254 L 122,242
+        L 118,230 L 116,218 L 115,206 L 116,194 L 118,182 L 120,170 L 122,158 L 124,145
+        L 128,132 L 134,120 L 142,108 L 150,98 L 158,90 L 165,82 L 172,74 L 178,66
+        L 182,58 L 186,50 L 192,42 L 200,36 L 210,30 L 222,24 L 235,20 L 248,17 Z
+      "/>
+      <!-- Northeast bump -->
+      <path class="land" fill="url(#mapGrad)" stroke="#1b4332" stroke-width="0.8" d="
+        M 370,30 L 395,28 L 418,35 L 435,45 L 448,60 L 455,78 L 456,96 L 448,110
+        L 438,118 L 428,108 L 420,95 L 415,80 L 408,68 L 398,58 L 386,50 L 375,44 Z
+      "/>
+    </svg>
+
+    <!-- Pins will be injected by JS -->
+  </div>
+</div>
+
+<!-- ══════════ POPUP CARD ══════════ -->
+<div class="popup-overlay" id="popup-overlay" onclick="closePopup(event)">
+  <div class="popup-card" id="popup-card">
+    <button class="close-btn" onclick="closePopup(null, true)">✕</button>
+    <div class="popup-avatar" id="popup-avatar"></div>
+    <div class="popup-name" id="popup-name"></div>
+    <div class="popup-city" id="popup-city"></div>
+    <div class="popup-msg" id="popup-msg"></div>
+    <div class="popup-badge">🎁 Participou do presente</div>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN 3 – SCRATCH ══════════ -->
+<div class="screen" id="screen-scratch">
+  <div class="scratch-header">
+    <span class="crown">👑</span>
+    <h2>Chegou a sua vez!</h2>
+    <p>Raspe e descubra seu Gift Card especial,<br>enviado com todo amor!</p>
+  </div>
+
+  <div class="scratch-card-wrap">
+    <div class="scratch-card-inner">
+      <div class="scratch-prize-text">
+        <span class="prize-label">✦ Seu Gift Card ✦</span>
+        <span class="prize-hearts">💖💝💖</span>
+        <span class="prize-code-label">Código:</span>
+        <span class="prize-code">AMOR-2024-VOCÊ</span>
+        <span class="prize-footer">Parabéns! Você merece! 🎉</span>
+      </div>
+      <canvas id="scratch-canvas"></canvas>
+    </div>
+  </div>
+
+  <p class="scratch-hint" id="scratch-hint">👆 Arraste o dedo para raspar!</p>
+
+  <div class="scratch-participants" id="scratch-participants"></div>
+
+  <div class="love-msg">
+    "Obrigado por fazer parte da nossa vida! Aproveite cada detalhe desse presente feito com tanto amor!" 💕
+  </div>
+</div>
+
+<script>
+// ══════════ DATA ══════════
+const people = [
+  {
+    id: 'mirele',
+    name: 'Mirele',
+    city: 'Iporá, Goiás',
+    state: 'GO',
+    msg: 'De Iporá, para iluminar seu dia!',
+    emoji: '🌻',
+    color: '#FF9F43',
+    pinColor: '#FF9F43',
+    // Position % on the map container
+    x: 36, y: 53
+  },
+  {
+    id: 'ana-nathiele',
+    name: 'Ana & Nathiele',
+    city: 'Teresina, Piauí',
+    state: 'PI',
+    msg: 'De Teresina, com muito amor e amizade!',
+    emoji: '💜',
+    color: '#A855F7',
+    pinColor: '#A855F7',
+    x: 63, y: 28
+  },
+  {
+    id: 'liza',
+    name: 'Liza',
+    city: 'João Monlevade, MG',
+    state: 'MG',
+    msg: 'De João Monlevade, com carinho especial!',
+    emoji: '💚',
+    color: '#06D6A0',
+    pinColor: '#06D6A0',
+    x: 58, y: 62
+  },
+  {
+    id: 'luane',
+    name: 'Luane',
+    city: 'Itaperuna, RJ',
+    state: 'RJ',
+    msg: 'De Itaperuna, para tornar tudo ainda melhor!',
+    emoji: '🌸',
+    color: '#FF6B9D',
+    pinColor: '#FF6B9D',
+    x: 67, y: 70
+  },
+  {
+    id: 'bruno',
+    name: 'Bruno',
+    city: 'Osasco, São Paulo',
+    state: 'SP',
+    msg: 'De Osasco, com gratidão e amizade!',
+    emoji: '💙',
+    color: '#4ECDC4',
+    pinColor: '#4ECDC4',
+    x: 50, y: 75
+  }
+];
+
+const visited = new Set();
+let giftOpened = false;
+
+// ══════════ CONFETTI ══════════
+const confettiCanvas = document.getElementById('confetti-canvas');
+const ctx2 = confettiCanvas.getContext('2d');
+confettiCanvas.width = window.innerWidth;
+confettiCanvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+});
+
+const confettiColors = ['#FF6B9D','#FFD93D','#A855F7','#06D6A0','#FF9F43','#4ECDC4','#FF6B6B','#C7EFCF'];
+let confettiParticles = [];
+let confettiActive = false;
+
+function createConfetti(n = 80) {
+  confettiActive = true;
+  for (let i = 0; i < n; i++) {
+    confettiParticles.push({
+      x: Math.random() * confettiCanvas.width,
+      y: -20,
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 8,
+      size: Math.random() * 8 + 4,
+      color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+      shape: Math.random() > 0.5 ? 'rect' : 'circle',
+      life: 1
+    });
+  }
+}
+
+function drawConfetti() {
+  ctx2.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confettiParticles = confettiParticles.filter(p => p.life > 0);
+  for (const p of confettiParticles) {
+    ctx2.save();
+    ctx2.globalAlpha = p.life;
+    ctx2.fillStyle = p.color;
+    ctx2.translate(p.x, p.y);
+    ctx2.rotate(p.rot * Math.PI / 180);
+    if (p.shape === 'rect') ctx2.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+    else { ctx2.beginPath(); ctx2.arc(0,0,p.size/2,0,Math.PI*2); ctx2.fill(); }
+    ctx2.restore();
+    p.x += p.vx; p.y += p.vy; p.rot += p.vRot;
+    if (p.y > confettiCanvas.height) p.life -= 0.05;
+    else p.life -= 0.003;
+  }
+  if (confettiParticles.length > 0) requestAnimationFrame(drawConfetti);
+  else { confettiActive = false; ctx2.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); }
+}
+
+// ══════════ SCREEN 1 ══════════
+function openGift() {
+  if (giftOpened) return;
+  giftOpened = true;
+  const box = document.getElementById('gift-box');
+  const hint = document.getElementById('tap-hint');
+  const btn = document.getElementById('reveal-btn');
+
+  box.classList.add('opening');
+  setTimeout(() => {
+    box.classList.remove('opening');
+    box.classList.add('opened');
+    createConfetti(100);
+    if (!confettiActive) drawConfetti();
+    setTimeout(() => {
+      hint.style.display = 'none';
+      btn.classList.add('show');
+    }, 700);
+  }, 300);
+}
+
+function goToMap() {
+  showScreen('screen-map');
+  setTimeout(buildPins, 100);
+}
+
+// ══════════ SCREEN TRANSITIONS ══════════
+let currentScreen = 'screen-gift';
+function showScreen(id) {
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(id).classList.add('active');
+  currentScreen = id;
+  const backBtn = document.getElementById('back-btn');
+  backBtn.classList.toggle('visible', id !== 'screen-gift');
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  if (currentScreen === 'screen-map') showScreen('screen-gift');
+  else if (currentScreen === 'screen-scratch') showScreen('screen-map');
+}
+
+// ══════════ MAP PINS ══════════
+function buildPins() {
+  const mapContainer = document.querySelector('.map-container');
+  // Remove old pins
+  mapContainer.querySelectorAll('.map-pin').forEach(p => p.remove());
+
+  people.forEach((p, i) => {
+    const pin = document.createElement('div');
+    pin.className = 'map-pin';
+    pin.id = 'pin-' + p.id;
+    pin.style.left = p.x + '%';
+    pin.style.top = p.y + '%';
+    pin.style.animationDelay = (i * 0.15) + 's';
+
+    pin.innerHTML = `
+      <div class="pin-icon" style="background:${p.color};border-color:white;">
+        ${p.emoji}
+        <style>#pin-${p.id} .pin-icon::after{border-top-color:${p.color};}</style>
+      </div>
+      <div class="pin-name" style="color:${p.color}">${p.name.split(' ')[0]}</div>
+    `;
+
+    if (visited.has(p.id)) pin.classList.add('visited');
+
+    pin.addEventListener('click', () => openPopup(p));
+    mapContainer.appendChild(pin);
+  });
+}
+
+// ══════════ POPUP ══════════
+function openPopup(person) {
+  // Mark visited
+  if (!visited.has(person.id)) {
+    visited.add(person.id);
+    updateProgress();
+    document.getElementById('pin-' + person.id)?.classList.add('visited');
+    spawnHearts();
+    if (visited.size === people.length) {
+      setTimeout(goToScratch, 2000);
+    }
+  }
+
+  document.getElementById('popup-avatar').textContent = person.emoji;
+  document.getElementById('popup-avatar').style.background = `linear-gradient(135deg, ${person.color}33, ${person.color}66)`;
+  document.getElementById('popup-avatar').style.border = `4px solid ${person.color}`;
+  document.getElementById('popup-name').textContent = person.name;
+  document.getElementById('popup-name').style.color = person.color;
+  document.getElementById('popup-city').innerHTML = `<span class="flag">📍</span> ${person.city}`;
+  document.getElementById('popup-msg').textContent = person.msg;
+
+  document.getElementById('popup-overlay').classList.add('open');
+}
+
+function closePopup(e, force) {
+  if (force || e.target === document.getElementById('popup-overlay'))
+    document.getElementById('popup-overlay').classList.remove('open');
+}
+
+// ══════════ PROGRESS ══════════
+function updateProgress() {
+  const n = visited.size;
+  const total = people.length;
+  document.getElementById('progress-bar').style.width = (n / total * 100) + '%';
+  document.getElementById('progress-label').textContent = `${n} de ${total} pessoas descobertas`;
+}
+
+// ══════════ HEARTS ══════════
+function spawnHearts() {
+  const emojis = ['💖','💝','💕','✨','🎉','💫','🎁'];
+  for (let i = 0; i < 6; i++) {
+    setTimeout(() => {
+      const h = document.createElement('div');
+      h.className = 'floating-heart';
+      h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      h.style.left = (20 + Math.random() * 60) + 'vw';
+      h.style.top = (40 + Math.random() * 40) + 'vh';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 3000);
+    }, i * 150);
+  }
+}
+
+// ══════════ SCREEN 3 – SCRATCH ══════════
+function goToScratch() {
+  document.getElementById('popup-overlay').classList.remove('open');
+  showScreen('screen-scratch');
+  createConfetti(120);
+  if (!confettiActive) drawConfetti();
+  buildParticipantsChips();
+  setTimeout(initScratch, 300);
+}
+
+function buildParticipantsChips() {
+  const wrap = document.getElementById('scratch-participants');
+  wrap.innerHTML = people.map(p =>
+    `<div class="participant-chip">
+      <span class="dot" style="background:${p.color}"></span>
+      ${p.emoji} ${p.name} · ${p.state}
+    </div>`
+  ).join('');
+}
+
+function initScratch() {
+  const canvas = document.getElementById('scratch-canvas');
+  const inner = document.querySelector('.scratch-card-inner');
+  canvas.width = inner.offsetWidth;
+  canvas.height = inner.offsetHeight;
+  const ctx = canvas.getContext('2d');
+
+  // Draw silver scratch layer
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  grad.addColorStop(0, '#bdbdbd');
+  grad.addColorStop(0.3, '#e0e0e0');
+  grad.addColorStop(0.5, '#9e9e9e');
+  grad.addColorStop(0.7, '#cfcfcf');
+  grad.addColorStop(1, '#acacac');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Texture dots
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},0.04)`;
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+  }
+
+  // Pattern text
+  ctx.font = 'bold 13px Nunito, sans-serif';
+  ctx.fillStyle = 'rgba(100,100,100,0.18)';
+  for (let y = 20; y < canvas.height; y += 28) {
+    for (let x = -20; x < canvas.width; x += 120) {
+      ctx.fillText('✦ RASPE AQUI ✦', x, y);
+    }
+  }
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let isDrawing = false;
+  let scratched = 0;
+  const totalPixels = canvas.width * canvas.height;
+  const hint = document.getElementById('scratch-hint');
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function scratch(pos) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 28, 0, Math.PI * 2);
+    ctx.fill();
+    checkReveal();
+  }
+
+  function checkReveal() {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let clear = 0;
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      if (imageData.data[i] < 128) clear++;
+    }
+    const pct = clear / (canvas.width * canvas.height);
+    if (pct > 0.55) {
+      canvas.style.transition = 'opacity 0.8s';
+      canvas.style.opacity = '0';
+      hint.textContent = '🎉 Seu código foi revelado! Parabéns!';
+      hint.style.color = '#FFD93D';
+      createConfetti(80);
+      if (!confettiActive) drawConfetti();
+    }
+  }
+
+  canvas.addEventListener('mousedown', e => { isDrawing = true; scratch(getPos(e)); });
+  canvas.addEventListener('mousemove', e => { if (isDrawing) scratch(getPos(e)); });
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (isDrawing) scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchend', () => isDrawing = false);
+}
+
+// ══════════ INIT ══════════
+window.addEventListener('load', () => {
+  // Start subtle ambient particles on gift screen
+  setTimeout(() => {
+    if (currentScreen === 'screen-gift') {
+      createConfetti(15);
+      if (!confettiActive) drawConfetti();
+    }
+  }, 1000);
+});
+</script>
+</body>
+</html>
