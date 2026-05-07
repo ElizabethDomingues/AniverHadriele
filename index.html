@@ -494,6 +494,8 @@
     gap: 8px;
     padding: 20px;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
   }
   .scratch-prize-text .prize-label {
     font-size: 0.8rem;
@@ -570,6 +572,35 @@
     font-size: 0.88rem;
     line-height: 1.6;
     font-style: italic;
+  }
+
+  /* Navigation buttons for scratch cards */
+  .scratch-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  
+  .scratch-card-item {
+    text-align: center;
+  }
+  
+  .scratch-card-item h3 {
+    font-family: 'Pacifico', cursive;
+    color: var(--yellow);
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    text-shadow: 0 0 15px rgba(255,217,61,0.3);
+  }
+  
+  .scratch-card-item p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+    margin-bottom: 12px;
   }
 
   /* ───── FLOATING HEARTS ───── */
@@ -671,28 +702,68 @@
   <div class="scratch-header">
     <span class="crown">👑</span>
     <h2>Chegou a sua vez!</h2>
-    <p>Raspe e descubra seu Gift Card especial,<br>enviado com todo amor!</p>
+    <p>Raspe e descubra seus 3 Gift Cards especiais,<br>enviados com todo amor!</p>
   </div>
 
-  <div class="scratch-card-wrap">
-    <div class="scratch-card-inner">
-      <div class="scratch-prize-text">
-        <span class="prize-label">✦ Seu Gift Card ✦</span>
-        <span class="prize-hearts">💖💝💖</span>
-        <span class="prize-code-label">Código:</span>
-        <span class="prize-code">AMOR-2024-VOCÊ</span>
-        <span class="prize-footer">Parabéns! Você merece! 🎉</span>
+  <div class="scratch-cards-container">
+    <!-- CARD 1 -->
+    <div class="scratch-card-item">
+      <h3>🎁 Presente 1</h3>
+      <div class="scratch-card-wrap">
+        <div class="scratch-card-inner">
+          <div class="scratch-prize-text">
+            <span class="prize-label">✦ Seu Gift Card ✦</span>
+            <span class="prize-hearts">💖💝💖</span>
+            <span class="prize-code-label">Código:</span>
+            <span class="prize-code">95439994553199624</span>
+            <span class="prize-footer">Parabéns! 🎉</span>
+          </div>
+          <canvas id="scratch-canvas"></canvas>
+        </div>
       </div>
-      <canvas id="scratch-canvas"></canvas>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="scratch-card-item">
+      <h3>🎁 Presente 2</h3>
+      <div class="scratch-card-wrap">
+        <div class="scratch-card-inner">
+          <div class="scratch-prize-text">
+            <span class="prize-label">✦ Seu Gift Card ✦</span>
+            <span class="prize-hearts">🎁✨🎁</span>
+            <span class="prize-code-label">Código:</span>
+            <span class="prize-code">95528727774917203</span>
+            <span class="prize-footer">Aproveite! 🌟</span>
+          </div>
+          <canvas id="scratch-canvas-2"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="scratch-card-item">
+      <h3>🎁 Presente 3</h3>
+      <div class="scratch-card-wrap">
+        <div class="scratch-card-inner">
+          <div class="scratch-prize-text">
+            <span class="prize-label">✦ Seu Gift Card ✦</span>
+            <span class="prize-hearts">💝🌟💝</span>
+            <span class="prize-code-label">Código:</span>
+            <span class="prize-code">96588371090364067</span>
+            <span class="prize-footer">Incrível! 💫</span>
+          </div>
+          <canvas id="scratch-canvas-3"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 
-  <p class="scratch-hint" id="scratch-hint">👆 Arraste o dedo para raspar!</p>
+  <p class="scratch-hint" id="scratch-hint" style="margin-top: 24px;">👆 Arraste o dedo para raspar!</p>
 
   <div class="scratch-participants" id="scratch-participants"></div>
 
   <div class="love-msg">
-    "Obrigado por fazer parte da nossa vida! Aproveite cada detalhe desse presente feito com tanto amor!" 💕
+    "Obrigado por fazer parte da nossa vida! Aproveite cada detalhe desses presentes feitos com tanto amor!" 💕
   </div>
 </div>
 
@@ -942,7 +1013,15 @@ function goToScratch() {
   createConfetti(120);
   if (!confettiActive) drawConfetti();
   buildParticipantsChips();
-  setTimeout(initScratch, 300);
+  setTimeout(() => {
+    initScratch();
+    initScratch2();
+    initScratch3();
+  }, 300);
+}
+
+function goToScratchCard(cardIndex) {
+  // Função removida - cards agora são lado a lado
 }
 
 function buildParticipantsChips() {
@@ -1020,6 +1099,168 @@ function initScratch() {
     if (pct > 0.55) {
       canvas.style.transition = 'opacity 0.8s';
       canvas.style.opacity = '0';
+      const prizeText = canvas.parentElement.querySelector('.scratch-prize-text');
+      if (prizeText) prizeText.style.opacity = '1';
+      hint.textContent = '🎉 Seu código foi revelado! Parabéns!';
+      hint.style.color = '#FFD93D';
+      createConfetti(80);
+      if (!confettiActive) drawConfetti();
+    }
+  }
+
+  canvas.addEventListener('mousedown', e => { isDrawing = true; scratch(getPos(e)); });
+  canvas.addEventListener('mousemove', e => { if (isDrawing) scratch(getPos(e)); });
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (isDrawing) scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchend', () => isDrawing = false);
+}
+
+function initScratch2() {
+  const canvas = document.getElementById('scratch-canvas-2');
+  const inner = document.querySelector('.scratch-card-inner');
+  canvas.width = inner.offsetWidth;
+  canvas.height = inner.offsetHeight;
+  const ctx = canvas.getContext('2d');
+
+  // Draw silver scratch layer
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  grad.addColorStop(0, '#bdbdbd');
+  grad.addColorStop(0.3, '#e0e0e0');
+  grad.addColorStop(0.5, '#9e9e9e');
+  grad.addColorStop(0.7, '#cfcfcf');
+  grad.addColorStop(1, '#acacac');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Texture dots
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},0.04)`;
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+  }
+
+  // Pattern text
+  ctx.font = 'bold 13px Nunito, sans-serif';
+  ctx.fillStyle = 'rgba(100,100,100,0.18)';
+  for (let y = 20; y < canvas.height; y += 28) {
+    for (let x = -20; x < canvas.width; x += 120) {
+      ctx.fillText('✦ RASPE AQUI ✦', x, y);
+    }
+  }
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let isDrawing = false;
+  const hint = document.getElementById('scratch-hint-2');
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function scratch(pos) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 28, 0, Math.PI * 2);
+    ctx.fill();
+    checkReveal();
+  }
+
+  function checkReveal() {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let clear = 0;
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      if (imageData.data[i] < 128) clear++;
+    }
+    const pct = clear / (canvas.width * canvas.height);
+    if (pct > 0.55) {
+      canvas.style.transition = 'opacity 0.8s';
+      canvas.style.opacity = '0';
+      const prizeText = canvas.parentElement.querySelector('.scratch-prize-text');
+      if (prizeText) prizeText.style.opacity = '1';
+      hint.textContent = '🎉 Seu código foi revelado! Parabéns!';
+      hint.style.color = '#FFD93D';
+      createConfetti(80);
+      if (!confettiActive) drawConfetti();
+    }
+  }
+
+  canvas.addEventListener('mousedown', e => { isDrawing = true; scratch(getPos(e)); });
+  canvas.addEventListener('mousemove', e => { if (isDrawing) scratch(getPos(e)); });
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (isDrawing) scratch(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchend', () => isDrawing = false);
+}
+
+function initScratch3() {
+  const canvas = document.getElementById('scratch-canvas-3');
+  const inner = document.querySelector('.scratch-card-inner');
+  canvas.width = inner.offsetWidth;
+  canvas.height = inner.offsetHeight;
+  const ctx = canvas.getContext('2d');
+
+  // Draw silver scratch layer
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  grad.addColorStop(0, '#bdbdbd');
+  grad.addColorStop(0.3, '#e0e0e0');
+  grad.addColorStop(0.5, '#9e9e9e');
+  grad.addColorStop(0.7, '#cfcfcf');
+  grad.addColorStop(1, '#acacac');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Texture dots
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = `rgba(${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},${Math.random() > 0.5 ? 255 : 80},0.04)`;
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+  }
+
+  // Pattern text
+  ctx.font = 'bold 13px Nunito, sans-serif';
+  ctx.fillStyle = 'rgba(100,100,100,0.18)';
+  for (let y = 20; y < canvas.height; y += 28) {
+    for (let x = -20; x < canvas.width; x += 120) {
+      ctx.fillText('✦ RASPE AQUI ✦', x, y);
+    }
+  }
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let isDrawing = false;
+  const hint = document.getElementById('scratch-hint-3');
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function scratch(pos) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 28, 0, Math.PI * 2);
+    ctx.fill();
+    checkReveal();
+  }
+
+  function checkReveal() {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let clear = 0;
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      if (imageData.data[i] < 128) clear++;
+    }
+    const pct = clear / (canvas.width * canvas.height);
+    if (pct > 0.55) {
+      canvas.style.transition = 'opacity 0.8s';
+      canvas.style.opacity = '0';
+      const prizeText = canvas.parentElement.querySelector('.scratch-prize-text');
+      if (prizeText) prizeText.style.opacity = '1';
       hint.textContent = '🎉 Seu código foi revelado! Parabéns!';
       hint.style.color = '#FFD93D';
       createConfetti(80);
